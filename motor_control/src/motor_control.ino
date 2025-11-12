@@ -4,7 +4,7 @@
 InterruptEncoder encoder;
  
 // Pins
-const int M1 = 12;
+const int M1 = 12; 
 const int M2 = 11;
 const int SENSOR_PIN = A4;
 const int Enc_A = 4;
@@ -23,7 +23,6 @@ void setup() {
  
 void loop() {
   int sensorValue = analogRead(SENSOR_PIN);
-
   if (sensorValue < 1900) {                
     digitalWrite(M1, HIGH);
     digitalWrite(M2, LOW);

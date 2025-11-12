@@ -1,6 +1,6 @@
-.pio/
-lib/
-libdeps/
-include/
-test/
-.vscode/
+**.pio/
+**lib/
+**libdeps/
+**include/
+**test/
+**.vscode/
