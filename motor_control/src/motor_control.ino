@@ -3,7 +3,7 @@
 #include <InterruptEncoder.h>
 InterruptEncoder encoder;
  
-// Pins
+//pins
 const int M1 = 10; 
 const int M2 = 11;
 const int sensor_pin =  A7; //potentiometer pin
@@ -18,7 +18,7 @@ long last_pulses = 0;
 float pulse_per_rotation = 64;
 float gear_ratio = 50;
 float RPM = 0;
-char mode = 'Dh'; //set mode for task C, D, E etc.
+char mode = 'E'; //set mode for task C, D, E etc.
 
 void setup() {
 
@@ -61,6 +61,7 @@ void loop() {
   switch (mode) {
     case 'C': {
       //Task C  Code
+
       int sensorValue = analogRead(sensor_pin);
       if (sensorValue < 1900) {                
         digitalWrite(M1, HIGH);
@@ -131,18 +132,18 @@ void loop() {
     
     case 'E': {
     //PID constants
-    const float Kp = 2.0;
-    const float Ki = 0.5;
-    const float Kd = 0.1;
+    const float Kp = 2.0; //immediate correction
+    const float Ki = 0.5; //fixes accumulation of errors
+    const float Kd = 0.01; //smooths overshoot and oscillations
 
     static float integral = 0;
     static float previous_error = 0;
 
-    //Read target from trimmer
+    //get target angle from trimmer
     int trimmer_value = analogRead(sensor_pin);
     float target_angle = map(trimmer_value, 0, 4095, -180, 180);
 
-    //Read actual position from encoder (convert pulses to degrees)
+    //read position from encoder (convert pulses to degrees)
     long pulses = encoder.read();
     float actual_angle = (pulses / (pulse_per_rotation * gear_ratio)) * 360.0;
     long delta_pulses = pulses - last_pulses;
@@ -156,10 +157,13 @@ void loop() {
     float output = Kp * error + Ki * integral + Kd * derivative;
     previous_error = error;
 
-    //Limit output to PWM range
-    int pwm_value = constrain(abs(output), 0, 255);
+    //limit output to PWM range
+    int pwm_value = abs(output);
+    if (pwm_value > 255) {
+        pwm_value = 255;
+    }
 
-    //Apply motor direction
+    //apply motor direction
     if (output > 0) {
         analogWrite(M1, pwm_value);
         digitalWrite(M2, LOW);
