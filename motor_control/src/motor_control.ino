@@ -3,6 +3,8 @@
 #include <InterruptEncoder.h>
 InterruptEncoder encoder;
  
+//CREATED BY WPFC20 AND LS2878
+
 //pins
 const int M1 = 10; 
 const int M2 = 11;
